@@ -1,6 +1,6 @@
-import bech32
+import src.helpers.bech32 as bech32
 from enum import Enum 
-from bch_opcodes import OpcodesBCH
+from src.helpers.bchOpcodes import OpcodesBCH
 
 def mask_cash_address_prefix(prefix: str) -> list:
     result = [ord(char) & 31 for char in prefix]

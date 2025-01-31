@@ -1,13 +1,12 @@
-from typing import List, Any
-import struct 
-from bch_opcodes import OpcodesBCH
+from src.helpers.bchOpcodes import OpcodesBCH
 import hashlib
-import cashaddress
+import src.helpers.cashaddress as cashaddress
 
 """
+This file has been copied from the 'anyhedge-ec-plugin', original comment read:
+
 Most of this file is internal functions that were translated into python from
 the Cashscript, Bitauth, or Anyhedge libraries.
-
 """
 
 def hex_to_bin(valid_hex: str) -> bytes:
@@ -57,6 +56,8 @@ def number_to_bin_int32_le(value):
 
  
 def encode_to_bytes(value, value_type):
+    if value_type.startswith("bytes"):
+        value_type = "bytes"
     if value_type in ["pubkey", "bytes"]:
         if isinstance(value, bytes):
             # Value is already bytes, return it directly
@@ -73,10 +74,9 @@ def encode_constructor_args(contract_params, artifact_dict):
     encoded_args = []
     constructor_inputs = artifact_dict["constructorInputs"]
 
-    for input in reversed(constructor_inputs):
-        input_name = input["name"]
+    for i, input in enumerate(reversed(constructor_inputs)):
         input_type = input["type"]
-        input_value = getattr(contract_params, input_name) 
+        input_value = contract_params[len(contract_params) - i - 1]
         encoded_args.append(encode_to_bytes(input_value, input_type))
     return encoded_args
 
@@ -457,46 +457,11 @@ def find_index(lst, test_func):
             return i
     return -1
 
-def find_opcode_index(script, opcode):
-    # checks if an item equals the opcode
-    test_func = lambda op: op == opcode
-    index = find_index(script, test_func)
-    return index
 
-
-def remove_opcode_at_index(script, index):
-    # Remove the opcode at the specified index
-    if index >= 0 and index < len(script):
-        del script[index]
-
-def replace_bytecode_nop(script, OpcodesBCH):
-    index = find_opcode_index(script, OpcodesBCH["OP_NOP"])
-    if index < 0: 
-        return script
-    
-    remove_opcode_at_index(script, index)
-    
-    old_cut = script[index]
-    if isinstance(old_cut, bytes):
-        old_cut = decode_int(old_cut)   
-    elif old_cut == OpcodesBCH["OP_0"]:
-        old_cut = 0
-    elif OpcodesBCH["OP_1"] <= old_cut <= OpcodesBCH["OP_16"]:
-        old_cut -= 80
-    else:
-        return script
-    
-    script[index] = encode_int(old_cut + 1)  
-    bytecode_size = calculate_bytesize(script)  
-    
-    if bytecode_size > 252:
-        script[index] = encode_int(old_cut + 3)
-    return asm_to_script(script_to_asm(script))
 
 def generate_redeem_script(base_script, encoded_args):
     combined_script = encoded_args + base_script
-    retval  = replace_bytecode_nop(combined_script, OpcodesBCH)
-    return retval
+    return combined_script
 
 def address_contents_to_locking_bytecode(address_contents):
     if address_contents['type'] == 'p2pkh':
@@ -556,4 +521,4 @@ def script_to_address(script):
     locking_bytecode = script_to_locking_bytecode(script)
     prefix = "bitcoincash"
     address = cashaddress.locking_bytecode_to_cash_address(locking_bytecode, prefix)
-    return address
+    return address 

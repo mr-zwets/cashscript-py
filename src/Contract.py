@@ -1,5 +1,7 @@
+from src.helpers.utils import *
+
 class Contract:
-    def __init__(self, artifact, constructor_args, options=None):
+    def __init__(self, artifact: dict, constructor_args, options=None):
         self.artifact = artifact
         self.constructor_args = constructor_args
         self.options = options
@@ -27,16 +29,16 @@ class Contract:
                 f"but got {len(constructor_args)}"
             )
 
-        # encodedConstructorArgs = encodeConstructorArguments(artifact, constructorArgs)
-
-        # self.redeem_script = generateRedeemScript(asmToScript(artifact.bytecode), encodedConstructorArgs)
+        encoded_args = encode_constructor_args(constructor_args, artifact)
+        self.redeem_script = generate_redeem_script(asm_to_script(artifact['bytecode']), encoded_args)
 
         self.name = artifact["contractName"]
+        self.address = script_to_address(self.redeem_script)
         # self.address = scriptToAddress(self.redeem_script, self.provider.network, self.address_type, false)
         # self.token_address = scriptToAddress(self.redeem_script, self.provider.network, self.address_type, true)
         # self.bytecode = binToHex(scriptToBytecode(self.redeem_script))
         # self.bytesize = calculateBytesize(self.redeem_script)
-        # self.opcount = countOpcodes(self.redeem_script)
+        self.opcount = count_opcodes(self.redeem_script)
 
     async def get_balance(self):
         return "Placeholder bigint"

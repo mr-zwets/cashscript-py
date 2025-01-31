@@ -17,12 +17,15 @@ boundedBytesArtifact = load_json_fixture("./test/fixture/bounded_bytes.json")
 
 @pytest.fixture
 def contract():
-    constructor_args = ["", "", ""]
+    constructor_args = [placeholder(65), placeholder(65), 1000000]
     return Contract(twtArtifact, constructor_args, {"addressType": "p2sh32"})
 
 # Helper function for simulating placeholder values of a given size
 def placeholder(size):
-    return "x" * size 
+    return "00" * size 
+
+def placeholderBytes(size: int) -> bytearray:
+    return bytearray(size)
 
 @pytest.mark.skip(reason="Functionality not yet implemented")
 def test_fail_incorrect_constructor_args():
