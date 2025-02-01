@@ -6,7 +6,8 @@ class Contract:
         self.constructor_args = constructor_args
         self.options = options
         self.provider = "Placeholder self.provider"
-        self.address_type = options.get("addressType", "p2sh32") if options else "p2sh32"
+        # add support for p2sh32 and make it the default
+        self.address_type = options.get("addressType", "p2sh20") if options else "p2sh20"
         self.encoded_constructor_args = "Placeholder encodedConstructorArgs"
         self.redeem_script = "Placeholder redeemScript"
         self.unlock = "Placeholder unlock"

@@ -56,30 +56,30 @@ def test_fail_incomplete_artifact():
         Contract(incomplete_artifacts, [])
 
 def test_create_p2pkh_instance():
-    instance = Contract(p2pkhArtifact, [placeholder(20)])
+    instance = Contract(p2pkhArtifact, [placeholder(20)], {"addressType": "p2sh20"})
 
-    assert isinstance(instance.address, str)
+    assert instance.address == "bitcoincash:pphszjt47dtl5t70ntlfmfxj23rxqklsyv94hs7vmt"
     assert instance.name == p2pkhArtifact["contractName"]
 
 def test_create_transfer_with_timeout_instance():
     constructor_args = [placeholder(65), placeholder(65), 1000000]
-    instance = Contract(twtArtifact, constructor_args)
+    instance = Contract(twtArtifact, constructor_args, {"addressType": "p2sh20"})
 
-    assert isinstance(instance.address, str)
+    assert instance.address == "bitcoincash:pq6y95a62d597cahdaweehfrk8m920v3echjjmyf4l"
     assert instance.name == twtArtifact["contractName"]
 
 def test_create_hodl_vault_instance():
     constructor_args = [placeholder(65), placeholder(65), 1000000, 10000]
-    instance = Contract(hodlVaultArtifact, constructor_args)
+    instance = Contract(hodlVaultArtifact, constructor_args, {"addressType": "p2sh20"})
 
-    assert isinstance(instance.address, str)
+    assert instance.address == "bitcoincash:pzj96a4mqd4mxec678nprgxshmc9egwpwg4pjexc7c"
     assert instance.name == hodlVaultArtifact["contractName"]
 
 def test_create_mecenas_instance():
     constructor_args = [placeholder(20), placeholder(20), 1000000]
-    instance = Contract(mecenasArtifact, constructor_args)
+    instance = Contract(mecenasArtifact, constructor_args, {"addressType": "p2sh20"})
 
-    assert isinstance(instance.address, str)
+    assert instance.address == "bitcoincash:ppdmhypgpyl4e6mz8urrq56ur3wnr9cm45k8q5cva3"
     assert instance.name == mecenasArtifact["contractName"]
 
 @pytest.mark.asyncio
