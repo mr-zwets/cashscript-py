@@ -473,10 +473,17 @@ def address_contents_to_locking_bytecode(address_contents):
             OpcodesBCH["OP_EQUALVERIFY"],
             OpcodesBCH["OP_CHECKSIG"],
         ])
-    if address_contents['type'] == 'P2SH' or address_contents['type'] == 'p2sh':
+    if address_contents['type'] == 'p2sh20':
         return bytes([
             OpcodesBCH["OP_HASH160"],
             OpcodesBCH["OP_PUSHBYTES_20"],
+            *address_contents['payload'],
+            OpcodesBCH["OP_EQUAL"],
+        ])
+    if address_contents['type'] == 'p2sh32':
+        return bytes([
+            OpcodesBCH["OP_HASH256"],
+            OpcodesBCH["OP_PUSHBYTES_32"],
             *address_contents['payload'],
             OpcodesBCH["OP_EQUAL"],
         ])
@@ -501,9 +508,16 @@ def hash160(data):
     ripemd160_hash = hashlib.new('ripemd160', sha256_hash).digest()
     return ripemd160_hash
 
-def script_to_locking_bytecode(script): 
-    script_hash = hash160(script_to_bytecode(script))
-    address_contents = {"payload": script_hash, "type": "P2SH"} 
+def hash256(data):
+    return hashlib.sha256(hashlib.sha256(data).digest()).digest()
+
+
+def script_to_locking_bytecode(script, address_type):
+    if address_type != "p2sh32" and address_type != "p2sh20":
+        raise ValueError("address_type needs to be either 'p2sh32' or 'p2sh20'")
+    script_bytecode = script_to_bytecode(script)
+    script_hash = hash256(script_bytecode) if address_type == "p2sh32" else hash160(script_bytecode)
+    address_contents = {"payload": script_hash, "type": address_type} 
     locking_bytecode = address_contents_to_locking_bytecode(address_contents)
     return locking_bytecode
 
@@ -517,8 +531,8 @@ def count_opcodes(script):
     filtered_opcodes = [op for op in script if isinstance(op, int) and op > OP_16_value]
     return len(filtered_opcodes)
 
-def script_to_address(script): 
-    locking_bytecode = script_to_locking_bytecode(script)
+def script_to_address(script, address_type="p2sh32"): 
+    locking_bytecode = script_to_locking_bytecode(script, address_type)
     prefix = "bitcoincash"
     address = cashaddress.locking_bytecode_to_cash_address(locking_bytecode, prefix)
     return address 

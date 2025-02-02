@@ -56,9 +56,9 @@ def test_fail_incomplete_artifact():
         Contract(incomplete_artifacts, [])
 
 def test_create_p2pkh_instance():
-    instance = Contract(p2pkhArtifact, [placeholder(20)], {"addressType": "p2sh20"})
+    instance = Contract(p2pkhArtifact, [placeholder(20)])
 
-    assert instance.address == "bitcoincash:pphszjt47dtl5t70ntlfmfxj23rxqklsyv94hs7vmt"
+    assert instance.address == "bitcoincash:pvtfa2jjpxleu8e3qsyprymdgc0pgfjjgplvsz92snesya3p0ckgvh3ft5z2g"
     assert instance.name == p2pkhArtifact["contractName"]
 
 def test_create_transfer_with_timeout_instance():

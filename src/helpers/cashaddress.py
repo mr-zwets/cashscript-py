@@ -208,15 +208,16 @@ def locking_bytecode_to_cash_address(bytecode, prefix):
     if contents['type'] == "P2PKH" or contents['type'] == "p2pkh":
         return encode_cash_address(prefix, ADDRESS_TYPE_P2PKH, contents['payload'])
     if contents['type'] == "P2SH" or contents['type'] == "p2sh":
-        return encode_cash_address(prefix, ADDRESS_TYPE_P2SH , contents['payload'])
-    raise ValueError("Unsupported address type")
+        return encode_cash_address(prefix, ADDRESS_TYPE_P2SH, contents['payload'])
+    raise ValueError(f"Unsupported address type {contents['type']}")
 
 
 
 def locking_bytecode_to_address_contents(bytecode):
     # Define lengths and types
     p2pkh_length = 25
-    p2sh_length = 23
+    p2sh20_length = 23
+    p2sh32_length = 35
     p2pk_uncompressed_length = 67
     p2pk_compressed_length = 35
 
@@ -230,12 +231,20 @@ def locking_bytecode_to_address_contents(bytecode):
         start, end = 3, 23
         return {'payload': bytecode[start:end], 'type': 'p2pkh'}
 
-    # P2SH format
-    if (len(bytecode) == p2sh_length and
+    # P2SH format (p2sh20)
+    if (len(bytecode) == p2sh20_length and
             bytecode[0] == OpcodesBCH["OP_HASH160"] and
             bytecode[1] == OpcodesBCH["OP_PUSHBYTES_20"] and
             bytecode[22] == OpcodesBCH["OP_EQUAL"]):
         start, end = 2, 22
+        return {'payload': bytecode[start:end], 'type': 'p2sh'}
+
+    # P2SH format (p2sh32)
+    if (len(bytecode) == p2sh32_length and
+            bytecode[0] == OpcodesBCH["OP_HASH256"] and
+            bytecode[1] == OpcodesBCH["OP_PUSHBYTES_32"] and
+            bytecode[34] == OpcodesBCH["OP_EQUAL"]):
+        start, end = 2, 34
         return {'payload': bytecode[start:end], 'type': 'p2sh'}
 
     # P2PK uncompressed format
