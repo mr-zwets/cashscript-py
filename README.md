@@ -8,12 +8,14 @@ Relying on the earlier work by Jonald Fyookball on the [anyhedge-ec-plugin](http
 
 ## TODO
 
-- implement unlocker
+- finish unlocker in Contract class
 - add tests unlocker
 - implement SignatureTemplate
 - add tests SignatureTemplate
 - implement ElectrumNetworkProvider
 - add tests ElectrumNetworkProvider
+- implement TransactionBuilder
+- add tests TransactionBuilder
 
 ## Not Planned
 

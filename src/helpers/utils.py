@@ -80,6 +80,20 @@ def encode_constructor_args(contract_params, artifact_dict):
         encoded_args.append(encode_to_bytes(input_value, input_type))
     return encoded_args
 
+def encode_function_arg(argument, typeStr):
+    return "Placeholder"
+
+def create_input_script(redeem_script, complete_args, selector=None):
+    # Create unlock script / redeemScriptSig (add potential selector)
+    unlock_script = list(reversed(encoded_args))
+    
+    if selector is not None:
+        unlock_script.append(encode_int(int(selector)))  # Encode selector as script number
+    
+    # Create input script and compile it to bytecode
+    input_script = unlock_script + [script_to_bytecode(redeem_script)]
+    
+    return script_to_bytecode(input_script)
 
 def encode_data_push(data): 
     if isinstance(data, list):

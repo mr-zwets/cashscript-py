@@ -91,5 +91,3 @@ async def test_get_balance(contract):
 async def test_get_utxos(contract):
     assert await contract.get_utxos() == "Placeholder Utxo[]"
 
-def test_create_unlocker(contract):
-    assert contract.create_unlocker("Placeholder abi_function") == "Placeholder ContractUnlocker"

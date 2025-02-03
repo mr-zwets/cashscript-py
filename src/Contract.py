@@ -48,10 +48,20 @@ class Contract:
                     f"Expected {len(abi_function['inputs'])} arguments ({expected_types}) "
                     f"but got {len(args)}"
                 )
-            
-            # TODO: Implement generate_unlocking_bytecode
-            def generate_unlocking_bytecode():
-                return "Placeholder"
+
+            def generate_unlocking_bytecode(transaction, source_outputs, input_index):     
+                # TODO: implement encode_function_argument
+                encoded_args = [
+                    encode_function_argument(arg, abi_function["inputs"][i]["type"])
+                    for i, arg in enumerate(args)
+                ]
+                complete_args = [
+                    # TODO: add handling for signature templates
+                    ( arg ) 
+                    for arg in encoded_args
+                ]   
+                unlockingBytecode = create_input_script(self.redeem_script, complete_args, selector)
+                return unlockingBytecode
             
             def generate_locking_bytecode():
                 return address_to_lock_script(self.address)
