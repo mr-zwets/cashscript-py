@@ -531,8 +531,13 @@ def count_opcodes(script):
     filtered_opcodes = [op for op in script if isinstance(op, int) and op > OP_16_value]
     return len(filtered_opcodes)
 
-def script_to_address(script, address_type="p2sh32"): 
+def script_to_address(script, address_type="p2sh32", tokenAware=False): 
     locking_bytecode = script_to_locking_bytecode(script, address_type)
     prefix = "bitcoincash"
-    address = cashaddress.locking_bytecode_to_cash_address(locking_bytecode, prefix)
+    # change meaning of address_type to encode the tokenAware flag
+    if tokenAware:
+        address_type = "p2shWithTokens"
+    else:
+        address_type = "p2sh"
+    address = cashaddress.locking_bytecode_to_cash_address(locking_bytecode, prefix, address_type)
     return address 

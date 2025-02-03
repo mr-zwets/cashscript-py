@@ -26,8 +26,8 @@ class Contract:
         self.redeem_script = generate_redeem_script(asm_to_script(artifact['bytecode']), encoded_args)
 
         self.name = artifact["contractName"]
-        self.address = script_to_address(self.redeem_script, self.address_type)
-        self.token_address = "Placeholder tokenAddress"
+        self.address = script_to_address(self.redeem_script, self.address_type, False)
+        self.token_address = script_to_address(self.redeem_script, self.address_type, True)
         self.bytecode = "Placeholder bytecode"
         self.bytesize = "Placeholder bytesize"
         # self.address = scriptToAddress(self.redeem_script, self.provider.network, self.address_type, false)

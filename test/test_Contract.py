@@ -59,6 +59,7 @@ def test_create_p2pkh_instance():
     instance = Contract(p2pkhArtifact, [placeholder(20)])
 
     assert instance.address == "bitcoincash:pvtfa2jjpxleu8e3qsyprymdgc0pgfjjgplvsz92snesya3p0ckgvh3ft5z2g"
+    assert instance.token_address == "bitcoincash:rvtfa2jjpxleu8e3qsyprymdgc0pgfjjgplvsz92snesya3p0ckgv9z42drnr"
     assert instance.name == p2pkhArtifact["contractName"]
 
 def test_create_transfer_with_timeout_instance():

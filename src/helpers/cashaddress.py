@@ -199,18 +199,23 @@ def encode_cash_address(prefix: str, type: int, hash: bytes) -> str:
     return encode_cash_address_format(prefix, version_byte, hash)
 
 
-def locking_bytecode_to_cash_address(bytecode, prefix):
+def locking_bytecode_to_cash_address(bytecode, prefix, address_type):
          
-    ADDRESS_TYPE_P2PKH = 0   
-    ADDRESS_TYPE_P2SH = 1   
+    ADDRESS_TYPE_P2PKH = 0
+    ADDRESS_TYPE_P2SH = 1
+    ADDRESS_TYPE_P2PKH_WITH_TOKENS = 2
+    ADDRESS_TYPE_P2SH_WITH_TOKENS = 3
  
     contents = locking_bytecode_to_address_contents(bytecode) 
-    if contents['type'] == "P2PKH" or contents['type'] == "p2pkh":
+    if address_type == "p2pkh":
         return encode_cash_address(prefix, ADDRESS_TYPE_P2PKH, contents['payload'])
-    if contents['type'] == "P2SH" or contents['type'] == "p2sh":
+    if address_type == "p2sh":
         return encode_cash_address(prefix, ADDRESS_TYPE_P2SH, contents['payload'])
-    raise ValueError(f"Unsupported address type {contents['type']}")
-
+    if address_type == "p2pkhWithTokens":
+        return encode_cash_address(prefix, ADDRESS_TYPE_P2PKH_WITH_TOKENS, contents['payload'])
+    if address_type == "p2shWithTokens":
+        return encode_cash_address(prefix, ADDRESS_TYPE_P2SH_WITH_TOKENS, contents['payload'])
+    raise ValueError(f"Unsupported address type {address_type}")
 
 
 def locking_bytecode_to_address_contents(bytecode):
