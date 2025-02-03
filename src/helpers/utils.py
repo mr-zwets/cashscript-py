@@ -74,9 +74,9 @@ def encode_constructor_args(contract_params, artifact_dict):
     encoded_args = []
     constructor_inputs = artifact_dict["constructorInputs"]
 
-    for i, input in enumerate(reversed(constructor_inputs)):
+    for i, input in enumerate(constructor_inputs):
         input_type = input["type"]
-        input_value = contract_params[len(contract_params) - i - 1]
+        input_value = contract_params[i]
         encoded_args.append(encode_to_bytes(input_value, input_type))
     return encoded_args
 
@@ -460,7 +460,8 @@ def find_index(lst, test_func):
 
 
 def generate_redeem_script(base_script, encoded_args):
-    combined_script = encoded_args + base_script
+    reversed_encoded_args = list(reversed(encoded_args))
+    combined_script = reversed_encoded_args + base_script
     return combined_script
 
 def address_contents_to_locking_bytecode(address_contents):

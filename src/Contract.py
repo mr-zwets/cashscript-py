@@ -7,9 +7,6 @@ class Contract:
         self.options = options
         self.provider = "Placeholder self.provider"
         self.address_type = options.get("addressType", "p2sh32") if options else "p2sh32"
-        self.encoded_constructor_args = "Placeholder encodedConstructorArgs"
-        self.unlock = "Placeholder unlock"
-
         expected_properties = ["abi", "bytecode", "constructorInputs", "contractName", "compiler"]
         if not all(prop in artifact for prop in expected_properties):
             raise ValueError("Invalid or incomplete artifact provided")
@@ -22,25 +19,39 @@ class Contract:
                 f"but got {len(constructor_args)}"
             )
 
-        encoded_args = encode_constructor_args(constructor_args, artifact)
-        self.redeem_script = generate_redeem_script(asm_to_script(artifact['bytecode']), encoded_args)
+        self.encoded_constructor_args = encode_constructor_args(constructor_args, artifact)
+        self.redeem_script = generate_redeem_script(asm_to_script(artifact['bytecode']), self.encoded_constructor_args)
 
         self.name = artifact["contractName"]
         self.address = script_to_address(self.redeem_script, self.address_type, False)
         self.token_address = script_to_address(self.redeem_script, self.address_type, True)
-        self.bytecode = "Placeholder bytecode"
-        self.bytesize = "Placeholder bytesize"
         # self.address = scriptToAddress(self.redeem_script, self.provider.network, self.address_type, false)
         # self.token_address = scriptToAddress(self.redeem_script, self.provider.network, self.address_type, true)
-        # self.bytecode = binToHex(scriptToBytecode(self.redeem_script))
-        # self.bytesize = calculateBytesize(self.redeem_script)
+        self.bytecode = script_to_bytecode(self.redeem_script).hex()
+        self.bytesize = calculate_bytesize(self.redeem_script)
         self.opcount = count_opcodes(self.redeem_script)
+        self.unlock = {}
+
+        if len(artifact["abi"]) == 1:
+            f = artifact["abi"][0]
+            self.unlock[f["name"]] = self._create_unlocker(f)
+        else:
+            for i, f in enumerate(artifact["abi"]):
+                self.unlock[f["name"]] = self._create_unlocker(f, i)
+
+    def _create_unlocker(self, f, index=None):
+        # TODO: Implement generate_unlocking_bytecode
+        def generate_unlocking_bytecode():
+            return "Placeholder"
+
+        return {
+            "generateUnlockingBytecode": generate_unlocking_bytecode,
+            "generateLockingBytecode": lambda: cash_address_to_locking_byte_code(self.address)
+        }
+
 
     async def get_balance(self):
         return "Placeholder bigint"
 
     async def get_utxos(self):
         return "Placeholder Utxo[]"
-
-    def create_unlocker(self, abi_function, selector=None):
-        return "Placeholder ContractUnlocker"
