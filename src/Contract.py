@@ -39,15 +39,28 @@ class Contract:
             for i, f in enumerate(artifact["abi"]):
                 self.unlock[f["name"]] = self._create_unlocker(f, i)
 
-    def _create_unlocker(self, f, index=None):
-        # TODO: Implement generate_unlocking_bytecode
-        def generate_unlocking_bytecode():
-            return "Placeholder"
+    def _create_unlocker(self, abiFunction, selector=None):
+        def unlocker(*args):
+            if len(abi_function["inputs"]) != len(args):
+                expected_types = [input["type"] for input in abi_function["inputs"]]
+                raise ValueError(
+                    f"Incorrect number of arguments passed to function {abi_function['name']}. "
+                    f"Expected {len(abi_function['inputs'])} arguments ({expected_types}) "
+                    f"but got {len(args)}"
+                )
+            
+            # TODO: Implement generate_unlocking_bytecode
+            def generate_unlocking_bytecode():
+                return "Placeholder"
+            
+            def generate_locking_bytecode():
+                return address_to_lock_script(self.address)
 
-        return {
-            "generateUnlockingBytecode": generate_unlocking_bytecode,
-            "generateLockingBytecode": lambda: cash_address_to_locking_byte_code(self.address)
-        }
+            return {
+                "generateUnlockingBytecode": generate_unlocking_bytecode,
+                "generateLockingBytecode": generate_locking_bytecode
+            }
+        return unlocker
 
 
     async def get_balance(self):
